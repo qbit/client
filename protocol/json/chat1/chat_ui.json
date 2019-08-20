@@ -2143,6 +2143,15 @@
         }
       ],
       "response": null
+    },
+    "triggerContactSync": {
+      "request": [
+        {
+          "name": "sessionID",
+          "type": "int"
+        }
+      ],
+      "response": null
     }
   },
   "namespace": "chat.1"
