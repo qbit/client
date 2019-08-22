@@ -237,7 +237,7 @@ public class KeybasePushNotificationListenerService extends FirebaseMessagingSer
                     }
 
                     if (payload != null && !payload.isEmpty()) {
-                        Keybase.handleBackgroundNotification(convID, payload, membersType, displayPlaintext, messageId, pushId, badgeCount, unixTime, soundName, notifier);
+                        Keybase.handleBackgroundNotification(convID, payload, membersType, displayPlaintext, messageId, "", badgeCount, unixTime, soundName, notifier);
                     } else if (messageBody != null && !messageBody.isEmpty()) {
                         notifier.genericNotification(convID, "", messageBody, bundle, KeybasePushNotificationListenerService.CHAT_CHANNEL_ID);
                     }
