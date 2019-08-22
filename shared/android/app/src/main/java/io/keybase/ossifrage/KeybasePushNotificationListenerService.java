@@ -174,18 +174,18 @@ public class KeybasePushNotificationListenerService extends FirebaseMessagingSer
         try {
             String type = bundle.getString("type");
             String payload = bundle.getString("m");
+            boolean displayPlaintext = "true".equals(bundle.getString("n"));
+            int badgeCount = Integer.parseInt(bundle.getString("b"));
+            long unixTime = Integer.parseInt(bundle.getString("x"));
+            String soundName = bundle.getString("s");
+            int membersType = Integer.parseInt(bundle.getString("t"));
             KBPushNotifier notifier = new KBPushNotifier(getApplicationContext(), bundle);
             switch (type) {
                 case "chat.newmessageSilent_2": {
-                    boolean displayPlaintext = "true".equals(bundle.getString("n"));
-                    int membersType = Integer.parseInt(bundle.getString("t"));
                     String convID = bundle.getString("c");
                     int messageId = Integer.parseInt(bundle.getString("d"));
                     JSONArray pushes = parseJSONArray(bundle.getString("p"));
                     String pushId = pushes.getString(0);
-                    int badgeCount = Integer.parseInt(bundle.getString("b"));
-                    long unixTime = Integer.parseInt(bundle.getString("x"));
-                    String soundName = bundle.getString("s");
 
                     // Blow the cache if we aren't displaying plaintext
                     if (!msgCache.containsKey(convID) || !displayPlaintext) {
@@ -226,9 +226,7 @@ public class KeybasePushNotificationListenerService extends FirebaseMessagingSer
                 case "chat.newmessage": {
                     // The server will send us this if we didn't ack the chat.newmessageSilent_2 within
                     String convID = bundle.getString("convID");
-                    int membersType = Integer.parseInt(bundle.getString("t"));
                     int messageId = Integer.parseInt(bundle.getString("msgID"));
-                    // TODO should we just check if this is an exploding message and only show it then?
                     String messageBody = bundle.getString("message");
 
                     // We've shown this notification already
@@ -237,10 +235,10 @@ public class KeybasePushNotificationListenerService extends FirebaseMessagingSer
                     } else {
                         seenChatNotifications.add(convID + messageId);
                     }
-                    // TODO handle this case better. Right now this isn't as pretty as the notifs
-                    // above. We should use the engine to get more metadata. Making this ugly for now.
-                    // This is only used in exploding messages.
-                    if (messageBody != null && !messageBody.isEmpty()) {
+
+                    if (payload != null && !payload.isEmpty()) {
+                        Keybase.handleBackgroundNotification(convID, payload, membersType, displayPlaintext, messageId, pushId, badgeCount, unixTime, soundName, notifier);
+                    } else if (messageBody != null && !messageBody.isEmpty()) {
                         notifier.genericNotification(convID, "", messageBody, bundle, KeybasePushNotificationListenerService.CHAT_CHANNEL_ID);
                     }
 
